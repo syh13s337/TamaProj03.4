@@ -1,8 +1,8 @@
 package tamaSystem;
 
-import tamaDB.MySQLEngine;
-import tamaDB.TamaGUILogIn;
-import tamaDB.UserEngine;
+import tamaDB.DBMySQLEngine;
+import tamaDB.DBTamaGUILogIn;
+import tamaDB.DBUserEngine;
 import tamaDialogs.DialogEngine;
 import tamaDialogs.TalkingToTamaEngine;
 import tamaGUI.TamaGUI;
@@ -53,9 +53,9 @@ public class GameEngine {
 	private TamaGUI tg;
 	private TamaGUIFace tgf;
 
-	private MySQLEngine mysql;
-	private UserEngine ue;
-	private TamaGUILogIn tgli;
+	private DBMySQLEngine mysql;
+	private DBUserEngine ue;
+	private DBTamaGUILogIn tgli;
 
 	private String tamaName = "";
 	public String getTamaName() {
@@ -110,9 +110,9 @@ public class GameEngine {
 
 	//LOGIN LUNCHER!
 	public void StartLogIn(){
-		this.tgli = new TamaGUILogIn();
-		this.ue = new UserEngine(tgli);
-		this.mysql = new MySQLEngine(ge, tgli);
+		this.tgli = new DBTamaGUILogIn();
+		this.ue = new DBUserEngine(tgli);
+		this.mysql = new DBMySQLEngine(ge, tgli);
 
 
 		this.tgli.loginStarter(ge, tgli, ue, mysql);
