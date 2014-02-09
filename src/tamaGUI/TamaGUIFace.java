@@ -3,7 +3,6 @@ package tamaGUI;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 
 import tamaSystem.DepressionEngine;
 import tamaSystem.GameEngine;
@@ -23,8 +22,6 @@ import tamaSystem.HungerEngine;
  */
 
 public class TamaGUIFace implements Runnable {
-
-	private static final long serialVersionUID = 1L;
 
 	private ArrayList <ImageIcon> faces;
 	private TamaGUI tg;
