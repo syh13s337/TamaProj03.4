@@ -6,11 +6,6 @@ package tamaStart;
  *  *  Yes even the png. PAINT proh!
  * 
  * 
- * 
- * NOTE MAKE THE GAME GUI START...
- * 
- * GAME ENGINE IS THE START CLASS,
- * 
  * TamaGUILogInUncher
  * >tamaguicreateuser 
  * 
@@ -31,10 +26,7 @@ public class TamaStartClass {
 
 		//		TamaGUIStart tgs = new TamaGUIStart();
 		//		tgs.TamaStartGUIStarter();
-
-
 		//		ge.StartLogIn();
-
 
 	}
 }

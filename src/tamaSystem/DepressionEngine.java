@@ -2,7 +2,6 @@ package tamaSystem;
 
 import java.util.Random;
 import tamaGUI.TamaGUI;
-import tamaGUI.TamaGUIStart;
 
 /** DEPRESSION ENGINE, 
  * The class that handles depression.
@@ -37,7 +36,6 @@ public class DepressionEngine implements Runnable {
 		this.tg = tg;
 		this.ge = ge;
 	}
-
 
 	//THE LOOP
 	@Override
