@@ -5,13 +5,9 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-import javax.swing.JTextArea;
-
-import tamaSystem.GameEngine;
-
-import com.mysql.jdbc.PreparedStatement;
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
 /*MySQL Engine
@@ -24,30 +20,61 @@ import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
  * 
  * CHECKA INDEX SYTAX/SYSTEM:
  * FOR FASTER SEARCH AND FINIDNG VALUES.
- * 
- * 
+ *
  * ADD CLOSERS!!!
  */
 
 public class DBMySQLEngine {
-	//ON TOP INCASE OF UPDATE OR CHANGE PATH.
+	//
+	//SELF NOTE: In case future upgrade/change.
+	//DB PATHWAY.
 	private final String SERVER_NAME = "localhost";
 	private final String DATABASE_NAME = "dbprojecttama";
 	private final int PORT = 3306;
 
-	protected MysqlDataSource ds;
-	protected Connection con = null;
-	protected Statement queryCaller = null;
-	protected ResultSet result = null;
-	protected java.sql.PreparedStatement psStream = null;
-	protected String inString = null;
-	protected int nCols;
+	//DBMySQLENGINE USERNAME AND PASS
+	//RESTRICTED TO BASE FUNKTION
+	private final String GUI_USERNAME = "tamaadmin";
+	public String getGUI_USERNAME() {
+		return GUI_USERNAME;
+	}
+	private final String GUI_PASSWORD = "java13";
+	public String getGUI_PASSWORD() {
+		return GUI_PASSWORD;
+	}
 
-	protected int rowCount;
-	protected GameEngine ge;
-	protected DBTamaGUILogIn tgli;
-	protected ArrayList <Integer> gameValues = new ArrayList<Integer>();
-	protected String tmpString;
+	private MysqlDataSource ds;
+	private Connection con = null;
+	private Statement queryCaller = null;
+	private ResultSet result = null;
+	private java.sql.PreparedStatement psStream = null;
+	private String inString = null;
+	private int nCols;
+
+	/**rowCount, NOT IN USE
+	 * <3 ANNIKA <3 eyes only!
+	 * NOTE: Was for a method that gets row count from a table.
+	 * To use as id key generator. 
+	 */
+	private int rowCount;
+	public int getRowCount() {
+		return rowCount;
+	}
+	public void setRowCount(int rowCount) {
+		this.rowCount = rowCount;
+	}
+
+	//ARRAY WITH GAME VALUES
+	private ArrayList <Integer> gameValues;
+	public ArrayList<Integer> getGameValuesArray() {
+		return gameValues;
+	}
+	public void setGameValuesArray(ArrayList<Integer> gameValues) {
+		this.gameValues = gameValues;
+	}
+
+	private String tmpString;
+	private DBTamaGUILogIn dbtgli;
 
 	private ArrayList <String> selectMethodSingle;
 	public void clearSelectMethodSingleArray(){
@@ -57,78 +84,77 @@ public class DBMySQLEngine {
 		return selectMethodSingle;
 	}
 
+	//DOING NOTHING ATM.
 	public void getMySQLDB(String user, String password){
 		connectionMethod(user, password);
 		selectMethod("SELECT * FROM gamevalues;");
 		getGameValue();
 	}
 
-	public DBMySQLEngine(GameEngine ge, DBTamaGUILogIn tgli){
-		this.tgli = tgli;
-		this.ge = ge;
+	public DBMySQLEngine(DBTamaGUILogIn dbtgli){
+		this.dbtgli = dbtgli;
 	}
 
 	public DBMySQLEngine(){
 	}
 
-	protected void connectionMethod(String user, String password){
+	public void connectionMethod(String user, String password){
 		ds = new MysqlDataSource(); 
 		ds.setServerName(SERVER_NAME);
 		ds.setPort(PORT);
 		ds.setDatabaseName(DATABASE_NAME);
 
 		try {
-			//DO NOT SHOW PASSWORD CODE IN YOUR CLIENT
-			this.con = ds.getConnection(user, password); //try to connect to ds. With user and password.
+			this.con = ds.getConnection(user, password);
+			statementMethod();
 		} catch (SQLException e) {
-			System.out.println("-----ERROR: Could not connect!-----"); //Good to make a syso, just to check where the problem is.
-			return;
+			System.out.println("-ERROR: connectionMethod");
 		}		
-		System.out.println("*****Connection succsessfull!*****"); //Good to make a syso that tells that its online.
+		System.out.println("*SUCCSESS: connectionMethod");
 	}
 
-	protected void statementMethod(){
+	//SELF NOTE: Bake this in into another method.
+	//Maybe in connectionMethod. Get on that FUTURE ARILD!
+	public void statementMethod(){
 		try {
 			queryCaller = con.createStatement();
 		} catch (SQLException e) {
 			try {
-				con.close(); //close connection
+				con.close();
 			} catch (SQLException e1) {
 			}
-			System.out.println("-----STATETMENT ERROR!" + e.getMessage());
+			System.out.println("-ERROR: statementMethod" + e.getMessage());
 		}
-		System.out.println("*****Statement Succsessfull!*****");
+		System.out.println("*SUCCSESS: statementMethod");
+	}
+
+	//INSERT V1, MOSTLY TEST
+	//WILL MAKE INSERTS THROUGH A PREPARED STATEMENT
+	public void insertMethod(){
+		int affectedRows = 0;
+		try {
+			affectedRows = queryCaller.executeUpdate("INSERT INTO actor VALUES('201', 'IVAN', 'DRAGO', '2006-02-15 04:34:33')");
+		} catch (SQLException e) {
+			System.out.println("-ERROR: insertMethod" + e.getMessage());
+		}
+		System.out.println("*SUCCSESS: insertMethod");
+		System.out.println("Adected rows: " + affectedRows);
 	}
 
 	//NOT FULLY WORKING YET
-	protected void preparedStatementMethod(String psString, String statementString){
+	public void preparedStatementMethod(String psString, String statementString){
 		try {
 			psStream = con.prepareStatement(psString);
 			psStream.setString(1, statementString);
 
 			psStream.executeQuery();
 		} catch (SQLException e) {
-			System.out.println("----PreparedStatement, ERROR! ----");
+			System.out.println("-ERROR: preparedStatementMethod");
 		}
 	}
 
-	//INSERT, ONE
-	private void insertMethod(){
-		int affectedRows = 0;
-		try {
-			affectedRows = queryCaller.executeUpdate("INSERT INTO actor VALUES('201', 'IVAN', 'DRAGO', '2006-02-15 04:34:33')");
-		} catch (SQLException e) {
-			System.out.println("-----INSERT ERROR-----" + e.getMessage());
-		}
-		System.out.println("*****INSERT SUCCSESSFULL*****");
-		System.out.println("Adected rows: " + affectedRows);
-	}
-
-	//INSERT, MORE
-
-	//Select and get information, Need path to column.
-	protected void selectMethod(String querys){
-		JTextArea tmpJT = null;
+	//SELECT AND GETS INFO, NEED QUERYES
+	public void selectMethod(String querys){
 		try {
 			//SELECT
 			result = queryCaller.executeQuery(querys);
@@ -140,8 +166,8 @@ public class DBMySQLEngine {
 				System.out.println(resultInfo.getColumnLabel(i) + " ");
 
 				//TEST
-				tmpJT.append(resultInfo.getColumnLabel(i) + " ");
-				tgli.setTextLogInInformation(tmpJT);
+				inString = resultInfo.getColumnLabel(i) + " ";
+				//				dbtgli.setTextLogInInformation(inString);
 			}
 			while(result.next()){
 				//GET RESULT BY COLUM NAME
@@ -150,113 +176,146 @@ public class DBMySQLEngine {
 
 				// DATA BAS STUFF always starts at 1, not 0 like in normal JAVA.
 				//GET ALL RESULT		
-				//				for (int i = 1; i < nCols; i++) {
-				//					System.out.println(result.getString(i) + " : OUT PUT ");
-				//				}
-				String tamaname = result.getString("totalpoints");
-				String deathBy = result.getString("deathBy");
+				for (int i = 1; i < nCols; i++) {
+					inString += result.getString(i) + " : OUT PUT ";
+					System.out.println(result.getString(i) + " : OUT PUT ");
+				}
 
-				tmpJT.append(tamaname);
-				tgli.setTextLogInInformation(tmpJT);
-				tmpJT.append(deathBy);
-				tgli.setTextLogInInformation(tmpJT);
+				//SPECIFIC
+				//				String tamaname = result.getString("tamaname");
+				//				String deathBy = result.getString("deathBy");
+				//
+				//				dbtgli.setTextLogInInformation(tamaname);
+				//				dbtgli.setTextLogInInformation(deathBy);
 
-				System.out.println();
+				dbtgli.setTextLogInInformation(inString);
+				System.out.println(inString);
 				rowCount++;
+				inString = "";
 			}
 
 		} catch (SQLException e) {
-			System.out.println("-----QueryCaller ERROR!-----" + e.getMessage());
+			System.out.println("-ERROR: queryCaller" + e.getMessage());
 		}
-		System.out.println("*****QueryCaller succsess!*****");
+		System.out.println("*SUCCSESS: queryCaller");
 	}
 
-	//select method type 2 Returns a String.
-	protected String selectMethodSingle(String querys){
+	//SELECT SINGEL, RETURNS STRING VALUE OF 1 COLUMN, 1 ROW
+	public String selectMethodSingle(String querys){
 		tmpString = "";
-		//		selectMethodSingle = new ArrayList<String>();
 		try {
-			//SELECT
 			result = queryCaller.executeQuery(querys);
-			result.beforeFirst();
-			ResultSetMetaData resultInfo = result.getMetaData();
-			this.nCols = resultInfo.getColumnCount();
+			result.first();
 
-			while(result.next()){
-				for (int i = 1; i < nCols; i++) {
-					//					selectMethodSingle.add(result.getString(i));
+			tmpString = result.getString(1);
 
-					tmpString += result.getString(i);
-				}
-			}
 		} catch (SQLException e) {
-			System.out.println("-----QueryCaller ERROR!-----" + e.getMessage());
+			System.out.println("-ERROR: queryCaller" + e.getMessage());
 		}
-		System.out.println("*****QueryCaller succsess!*****");
-		//		tmpString = selectMethodSingle.toString();
-		//		
-		//		System.out.println(tmpString + " STRING");
-		//		System.out.println(selectMethodSingle + " array");
-
+		System.out.println("*SUCCSESS: queryCaller");
 		return tmpString;
 	}
 
-	public ArrayList<Integer> getGameValue(){
+	//EASY GET RESULT SET FROM QUERY STRING METHOD
+	//SELF NOTE: Make this main result.
+	public ResultSet getResult(String querys){
 		try {
-			//SELECT
+			result = queryCaller.executeQuery(querys);
+		} catch (SQLException e) {
+			System.out.println("-ERROR: getResult");
+		}
+
+
+		return result;
+	}
+
+	//GET GAME VALUES FROM DB, 
+	//PUT IT IN A ARRAY LIST.
+	public void getGameValue(){
+		gameValues = new ArrayList<Integer>();
+		try {
 			result = queryCaller.executeQuery("SELECT * FROM gamevalues;");
-			result.beforeFirst();
 			ResultSetMetaData resultInfo = result.getMetaData();
 			int nCols = resultInfo.getColumnCount();
-
-			for (int i = 1; i < nCols; i++) {
-				System.out.println(resultInfo.getColumnLabel(i) + " ");
+			while(result.next()){	
+				int tmpColumnCounter = 0;
+				for (int i = 1; tmpColumnCounter < nCols; i++) {
+					gameValues.add(result.getInt(i));		
+					tmpColumnCounter++;
+				}
 			}
 
+
+		} catch (SQLException e) {
+			System.out.println("-QueryCaller ERROR!" + e.getMessage()); //TESTER
+		}
+		System.out.println("*QueryCaller succsess!"); //TESTER
+	}
+
+	//GET HIGH SCORE, WITH FULL DAY/YEAR INFORMATION
+	//MAYBE MAKE NEW MATH ABOUT INFORMATION?
+	//tmpInt/6 = hours
+	//tmpInt/144 = days
+	//tmpInt/4320 = months
+	//tmpInt/51840 = years
+	public String getScores(){
+		String getScores  = "";
+		getScores  = "\t (>^_^)> TAMA HIGH SCORE <(^_^<) \n\n";
+		connectionMethod(GUI_USERNAME, GUI_PASSWORD);
+		DecimalFormat df = new DecimalFormat("0.00"); 
+		int higeScoreNr = 1;
+
+		try {
+			result = queryCaller.executeQuery("SELECT totalpoints, tamaname, deathby FROM scores ORDER BY totalpoints desc limit 10;");
 			while(result.next()){
-				//SELFNOTE DATA BAS STUFF always starts at 1, not 0 like in normal JAVA.
-				for (int i = 1; i < nCols; i++) {
-					int	x = 0;
-					System.out.println(result.getInt(i) + " ");
-					gameValues.add(x, result.getInt(i));
-				}
-				System.out.println();
+				String tamaPoints = result.getString("totalpoints");
+				int points = Integer.parseInt(tamaPoints);
+				String tamaname = result.getString("tamaname");
+				String deathBy = result.getString("deathBy");
+				getScores +="\t" + higeScoreNr + ">" + " : " + tamaPoints +"p" + " - " + tamaname + " died by " + deathBy + "\n"
+						+ "\tDays alive - " + df.format(points/144) + "\n";
+				higeScoreNr++;
+			}
+
+		} catch (SQLException e) {
+			System.out.println("-QueryCaller ERROR!" + e.getMessage());
+		}
+		System.out.println("*QueryCaller succsess!");
+		return getScores;
+	}
+
+	//RESULT SET TO STRING.
+	//SELF NOTE: Make this method that takes in result set
+	//makes it to String and sends it to JTextArea. 
+	private String resultToGUI(ResultSet resultSetIn){
+		String resultToString = null;
+		try {
+			while (resultSetIn.next()) {
+				// It is possible to get the columns via name
+				// also possible to get the columns via the column number
+				// which starts at 1
+				// e.g. resultSet.getSTring(2);
+
+				String user = resultSetIn.getString("myuser");
+
+				System.out.println("User: " + user);
+
 			}
 		} catch (SQLException e) {
-			System.out.println("-----QueryCaller ERROR!-----" + e.getMessage()); //TESTER
+			System.out.println("-ERROR: resultToGUI");
 		}
-		System.out.println("*****QueryCaller succsess!*****"); //TESTER
-		return gameValues;
+		return resultToString;
 	}
 
-	public void getScores(){
-		selectMethod("SELECT totalpoints, tamaname, deathby FROM scores ORDER BY totalpoints desc limit 10;");
-		//		selectMethod("SELECT * FROM scores;");	
-
+	//SELF NOTE: FUTURE ARILD, Make commit method before sending/executeQuery
+	private void commitMethod(){
 	}
 
-	//RESULT SET METHOD, get information
-	//DO SOMETHING WITH IT TO UPDATE JTEXTAREA
-	private void writeResultSet(ResultSet resultSet) throws SQLException {
-		// ResultSet is initially before the first data set
-		while (resultSet.next()) {
-			// It is possible to get the columns via name
-			// also possible to get the columns via the column number
-			// which starts at 1
-			// e.g. resultSet.getSTring(2);
-			String user = resultSet.getString("myuser");
-			String website = resultSet.getString("webpage");
-			String summary = resultSet.getString("summary");
-			String comment = resultSet.getString("comments");
-			System.out.println("User: " + user);
-			System.out.println("Website: " + website);
-			System.out.println("Summary: " + summary);
-			System.out.println("Comment: " + comment);
-		}
-	}
-
+	/**
+	 * USE IT ARILD, USE THE FORCE!
+	 */
+	//CLOSE EVERYTHING METHOD
 	public void closeEverything(){
-		//CLOSE EVERYTHING
 		if(result != null){
 			try {
 				result.close();

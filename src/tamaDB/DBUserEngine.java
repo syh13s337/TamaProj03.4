@@ -1,17 +1,12 @@
 package tamaDB;
 
-import java.sql.SQLException;
-import com.mysql.jdbc.PreparedStatement;
-
-
 /*USER CLASS
  * THIS CLASS WORKS WITH USER/PASSWORD
  * 
  * 1, LOG IN CHECKER.
  * 2, CREATE NEW USER
  * 3, GRANTS NEW USER.
- * 
- * 
+ *  
  *CHANGE LATER:
  * tamaadmin GRANT privilage, so it dont get used in a bad way.
  * 
@@ -25,74 +20,87 @@ import com.mysql.jdbc.PreparedStatement;
  * tamaproj
  * 
  */
-public class DBUserEngine extends DBMySQLEngine {
+public class DBUserEngine {
 
 	private String userName;
-	private DBTamaGUILogIn tgli;
+	private DBTamaGUILogIn dbtgli;
+	private DBMySQLEngine dbmysqls;
 
-	public DBUserEngine(DBTamaGUILogIn tgli){
-		this.tgli = tgli;
+	public DBUserEngine(DBMySQLEngine dbmysqls, DBTamaGUILogIn dbtgli){
+		this.dbmysqls = dbmysqls;
+		this.dbtgli = dbtgli;
 	}
-	
-	public DBUserEngine(){
+
+	//SHOW SCORE, START INFORMATION FOR USERS
+	public void showScore(){
+		dbtgli.setTextLogInInformation(dbmysqls.getScores());
 	}
 
 	//CREAT A USER
-	public void createUsers(String userName, String userPassword){
+	//WITH BOOLEAN CHECKER ON USERNAME, PASSWORD AND EMAIL.
+	public void createUsers(String userName, String userPassword,
+			boolean tmpBooleanPass, boolean tmpBooleanMail){
 		this.userName=userName;
-		connectionMethod("tamaadmin", "java13");
-		statementMethod();
-		userChecker(userName);
+		dbmysqls.connectionMethod(dbmysqls.getGUI_USERNAME(), dbmysqls.getGUI_PASSWORD());
+		if(userChecker(userName) == false && tmpBooleanPass == true
+				&& tmpBooleanMail == true){
+			System.out.println("YOU CAN CREATE A USER!");
+		}
+		else if (userChecker(userName) == true){
+			dbtgli.popUpMessage("This user name is in use!"
+					+ "\nTry a new one.");
+		}
+		else{
+			System.out.println("NOPE!");
 
-
-		//THE INJECTION STRING
-		//	System.out.println(getGameValue());
-		//	System.out.println(createUserId() +  " " + userName + userPassword);
+		}
 	}
+
 	//LOG IN A USER
+	//SELF NOTE: When logged in, start the game!
+	//Add game method.
 	public void userLogIn(String userName, String userPassword){
 		this.userName=userName;
-		connectionMethod("tamaadmin", "java13");
-		statementMethod();
-		
-		String checkName = "SELECT username, password FROM user WHERE username='" + userName + "';";
-		String passWord = "SELECT username='" + userName + "' FROM user WHERE password='" + userPassword + "';";
-		selectMethodSingle(passWord);
-		
-		System.out.println("Out" + selectMethodSingle(passWord));
-		
-//		clearSelectMethodSingleArray();
-	}
+		String checkNameAndPass = "SELECT username='" + userName + "' FROM user WHERE password='" + userPassword + "';";
+		dbmysqls.connectionMethod(dbmysqls.getGUI_USERNAME(), dbmysqls.getGUI_PASSWORD());
+		dbmysqls.statementMethod();
 
-	//CHECK IF THE USER IS ALREADY CREATED.
-	private void userChecker(String userName){
-
-		String logInChecker = "SELECT username, password FROM user WHERE username='" + userName + "';";
-//		selectMethodSingle(logInChecker);
-		
-		if (selectMethodSingle(logInChecker).equals(userName)){
-			tgli.popUpMessage("This name in use");
-			System.out.println(getSelectMethodSingle().toString());
+		if (dbmysqls.selectMethodSingle(checkNameAndPass).equals("1")){
+			System.out.println("Your logged in!");
 		}
-		
-
-//		for (int i = 0; i < getSelectMethodSingle().size(); i++) {
-//			if (getSelectMethodSingle().get(i).equals(userName)){
-//				tgli.popUpMessage("This name in use");
-//				break;
-//			}
-//		}
+		else{
+			dbtgli.popUpMessage("Problem with loggin!"
+					+ "\nCheck user name and password!");
+		}
 	}
 
-	/** <3 ANNIKA <3 
-	* Metoden som räknar rows och plussar med 1, för att skapa ny
-	* id key.
-	*/ 	
+	//CHECK IF THE USER IS ALREADY CREATED. START AS FALSE, IF TRUE THE NAME IS IN USE.
+	//SELF NOTE: : V1, Old method that checks the resultset string. if it equals userName.
+	//V2, Let MySQL work with names that is already in DB and catch the error?
+	//V3, make a boolean check if the username is already in DB
+	private boolean userChecker(String userName){
+		boolean userChecker;
+		String logInChecker = "SELECT username FROM user WHERE username='" + userName + "';";
+		if (dbmysqls.selectMethodSingle(logInChecker).equals(userName)){
+			userChecker = true;
+		}
+		else{
+			userChecker = false;
+		}
+		return userChecker;
+	}
+
+	/**createUserId, NOT IN USE
+	 *  <3 ANNIKA <3  eyes only!
+	 *  Part of id key generator. It takes number from rowCount 
+	 *  adds 1+. And use that as new key.
+	 */ 	
 	//GET INT# COUNT BY WHILE LOOP IN SUPER CLASS
 	//MAYBE ANOTHER WAY TO DO IT???
+	//SELF NOTE: Yes! the other way is auto increment.
 	private int createUserId(){
-		selectMethod("SELECT userid FROM user; ");
-		int createUserId = rowCount + 1;
+		dbmysqls.selectMethod("SELECT userid FROM user; ");
+		int createUserId = dbmysqls.getRowCount() + 1;
 		return createUserId;
 	}
 }

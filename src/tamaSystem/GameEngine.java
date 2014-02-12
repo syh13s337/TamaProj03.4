@@ -1,8 +1,6 @@
 package tamaSystem;
 
-import tamaDB.DBMySQLEngine;
-import tamaDB.DBTamaGUILogIn;
-import tamaDB.DBUserEngine;
+import tamaDB.TamaDBEngine;
 import tamaDialogs.DialogEngine;
 import tamaDialogs.TalkingToTamaEngine;
 import tamaGUI.TamaGUI;
@@ -13,15 +11,12 @@ import tamaGUI.TamaGUIStart;
 /**THE GAME ENGINE
  * THE MASTER CLASS OF ALL CLASSES,
  * THE CLASS THAT RULE THEM ALL,
- * 
- * 
- *
  */
 
 public class GameEngine {
 
 	//GAME VERSION, OH SNAP ITS STATIC!
-	public static String TAMA_VERSION = "<TamaProj 03.3> ";
+	public static String TAMA_VERSION = "<TamaProj 03.4> ";
 	public static String MADE_BY = "Arild Oderman";
 
 	//THE LOOP/ENGINE STOPPER, SHOULD BE CONNECTED TO ALL "4EVER" LOOPED THREAD.
@@ -48,14 +43,24 @@ public class GameEngine {
 		this.ge = ge;
 	}
 
+	//NEW SUPER PLUG IN, DB STUFF
+	TamaDBEngine tdbe;
+	public void setTdbe(TamaDBEngine tdbe) {
+		this.tdbe = tdbe;
+
+	}
+
 	private TamaGUIEnd tge;
 	private TamaGUIStart tgs;
 	private TamaGUI tg;
 	private TamaGUIFace tgf;
 
-	private DBMySQLEngine mysql;
-	private DBUserEngine ue;
-	private DBTamaGUILogIn tgli;
+	private int moneyValue;
+	private int depressionValue;
+	private int energyValue;
+	private int foodValue;
+	private int happinessValue;
+
 
 	private String tamaName = "";
 	public String getTamaName() {
@@ -76,7 +81,7 @@ public class GameEngine {
 	private void initiater(){
 		this.tg = new TamaGUI();
 		this.tge = new TamaGUIEnd();
-		
+
 		this.de = new DepressionEngine(ge, tg);
 		this.he = new HungerEngine(ge, tg);
 		this.mo = new MoneyEngine(ge, tg);
@@ -108,24 +113,20 @@ public class GameEngine {
 		tgfEngine.start();
 	}
 
-	//LOGIN LUNCHER!
+	//LOGIN LUNCHER TO DB.
+	//SELF NOTE: Start everything from GameEngine
+	//or let the DBEngine start game.
 	public void StartLogIn(){
-		this.tgli = new DBTamaGUILogIn();
-		this.ue = new DBUserEngine(tgli);
-		this.mysql = new DBMySQLEngine(ge, tgli);
-
-
-		this.tgli.loginStarter(ge, tgli, ue, mysql);
 	}
 
 	//LAUNCHER AFTER LOG ING
-	//
 	public void GameGuiStart(){
 		tgs = new TamaGUIStart();
 		tgs.TamaStartGUIStarter(ge);
 	}
 
 	//THE MAIN GAME GUI
+	//SELF NOTE: Now with gameValues from DB.
 	public void GameGUI(int gameLevel, String frameTitle, String tamaName){
 		initiater();
 
@@ -134,10 +135,47 @@ public class GameEngine {
 
 		tg.TamaGUI(gameLevel, frameTitle, tamaName, he, mo, di, tt, de);
 		this.tgf = new TamaGUIFace(ge, tg, de, he);
-
+		
+		tdbe.gameValue();
+			
 		threadStarter();
 
 		tg.showGUI(true);
+	}
+
+	//METHOD THAT SETS THE VALUES BY GAME LEVEL.
+	//AND SENDS VALUES TO ITS CLASSES.
+	//NEED TamaDBEngine, WHERE IT GETS VALUES FROM DB.
+	//SELF NOTE: FOOD and HAPPINESS value is not in use yet
+	public void gameValueSetter(int mv1,int mv2,int mv3,int dv1,int dv2,
+			int dv3,int ev1,int ev2,int ev3,int fv1,int fv2,int fv3,
+			int hv1, int hv2, int hv3){
+
+		if (gameLevel == 1){
+			moneyValue = mv1;
+			depressionValue = dv1;
+			energyValue = ev1;
+			foodValue = fv1;
+			happinessValue = hv1;
+		}
+		else if (gameLevel == 2){
+			moneyValue = mv2;
+			depressionValue = dv2;
+			energyValue = ev2;
+			foodValue = fv2;
+			happinessValue = hv2;
+		}
+		else if (gameLevel == 3){
+			moneyValue = mv3;
+			depressionValue = dv3;
+			energyValue = ev3;
+			foodValue = fv3;
+			happinessValue = hv3;
+		}
+
+		mo.setMoneyValue(moneyValue);
+		de.setDepressionValue(depressionValue);
+		he.setHungerValue(energyValue);
 	}
 }
 

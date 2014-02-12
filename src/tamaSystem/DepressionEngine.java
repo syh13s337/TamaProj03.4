@@ -7,16 +7,22 @@ import tamaGUI.TamaGUI;
  * The class that handles depression.
  * Looped a ticker and checkers.
  * Updater for the DepressionBar
- *
- * 
+
  *
  */
 public class DepressionEngine implements Runnable {
 	//
-	//Note: Incase future upgrade/change the varible is here.
+	//SELF NOTE: In case future upgrade/change.
 	//
+	private int depressionValue;
+	public int getDepressionValue() {
+		return depressionValue;
+	}
+	public void setDepressionValue(int depressionValue) {
+		this.depressionValue = depressionValue;
+	}
+
 	private int tamaCurrentDepression = 10000;
-	private int depressionValue = 20;
 	private int mouseHappiness = 20;
 	private int mouseHappinessSinker = 20;
 	private Random intGenerator = new Random();
@@ -24,7 +30,9 @@ public class DepressionEngine implements Runnable {
 	private GameEngine ge;
 
 	//DEPRESSION, THREAD SLEEPER VALUES
+	//1000 MILISEC, NORMAL.
 	protected final int depressionBuilderTimeValue = 1000;
+	
 	private boolean deathByDepression = false;
 
 	private int gameLevel;
@@ -50,7 +58,7 @@ public class DepressionEngine implements Runnable {
 		}
 	}
 
-	//Random generate depression for Tama for lv 3
+	//RANDOM GENERATE DEPRESSION/SINK FOR TAMA LV 3
 	private void TamaRandomDepression(){
 		if(gameLevel == 3){
 			int rndNr = intGenerator.nextInt(32);
@@ -62,7 +70,7 @@ public class DepressionEngine implements Runnable {
 		}
 	}
 
-	//RANDOM GENERATE, TAMA IN GOOD MOOD
+	//RANDOM GENERATE, TAMA GOOD MOOD
 	private void TamaRandomGoodMood(){
 		int rndNr = intGenerator.nextInt(30);
 		if (rndNr == 5){
@@ -82,16 +90,16 @@ public class DepressionEngine implements Runnable {
 		}
 	}
 
-	//When Tama reach 0 depression
-	// CHANGE SYSTEM
-	//
+	//WHEN TAMA DEPRESSION REACH 0,
+	//TAMA DIES
+	//SELF NOTE: maybe change system.
 	private void deathByDepression() {
 		if (tamaCurrentDepression <= 0){
 			deathByDepression = true;
 		}
 	}
 
-	//warning message if depression reach a low point
+	//WARNING MESSAGE IF DEPRESSION REACH A LOW POINT
 	private void depressionWarnings(){
 		if (tamaCurrentDepression <= 1000){
 			tg.setTextArea("...I am so depressed");

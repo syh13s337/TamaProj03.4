@@ -1,5 +1,7 @@
 package tamaStart;
 
+import tamaSystem.GameEngine;
+
 /** Just a start Class
  * 
  *  Made by Arild Oderman, Java13
@@ -14,8 +16,6 @@ package tamaStart;
  * > THE GAME GUI,
  * 
  */
-
-import tamaSystem.GameEngine;
 
 public class TamaStartClass {
 

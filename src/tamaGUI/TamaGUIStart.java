@@ -35,7 +35,7 @@ public class TamaGUIStart extends JFrame {
 	private JTextField txtEnterTamaName;
 	private JTextArea InfoText;
 	private JScrollPane scrollPane;
-	private int tmpX = 1;
+	private int tmpXForButton = 1;
 
 	private GameEngine ge;
 	
@@ -176,16 +176,16 @@ public class TamaGUIStart extends JFrame {
 		JButton btnAbout = new JButton("About");
 		btnAbout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(tmpX == 3){
-					tmpX = 1;
+				if(tmpXForButton == 3){
+					tmpXForButton = 1;
 				}
-				if (tmpX == 1){
+				if (tmpXForButton == 1){
 					InfoText.setText(aboutInfoString);
-					tmpX++;
+					tmpXForButton++;
 				}
-				else if (tmpX == 2){
+				else if (tmpXForButton == 2){
 					InfoText.setText(gameInfoString);
-					tmpX++;
+					tmpXForButton++;
 				}
 			}
 		});

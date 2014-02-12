@@ -20,7 +20,7 @@ public class WinAndEndEngine implements Runnable {
 	private DepressionEngine de;
 	private HungerEngine he;
 
-	//in seconds, 3600 = 1h
+	//VALUE FOR THE WIN TIM, 3600 SEC = 1 HOUR.
 	private int tamaWinTimer = 3600;
 
 	public WinAndEndEngine(GameEngine ge, TamaGUI tg, TamaGUIEnd tge,
@@ -34,23 +34,9 @@ public class WinAndEndEngine implements Runnable {
 
 	public WinAndEndEngine(){
 	}
-
-	private void deathAndWinChecker(){
-		if (de.isDeathByDepression() == true){
-			deathByDepression(ge.getTamaName());
-			tg.showGUI(false);
-		}
-		else if(he.isDeathByHunger() == true){
-			deathByHunger(ge.getTamaName());
-			tg.showGUI(false);
-		}
-		else if (isWin() == true){
-			winning(ge.getTamaName());
-			tg.showGUI(false);
-		}
-	}
-
-	//THE LOOP, WIN/DEATH CHECKER
+	
+	//THE LOOP
+	//SLEEP TIMER 1000 MILISEC, NORMAL (CHANGE IT LATER IF NEEDED)
 	@Override
 	public void run() {
 		int tmpTimeCounter = 0;
@@ -68,6 +54,23 @@ public class WinAndEndEngine implements Runnable {
 					e.printStackTrace();
 				}
 			}
+		}
+	}
+
+	//CHECKS OTHER CLASSEX IF TAMA DIED BY HUNGER OR DEPRESSION.
+	//IT ALSO CHECKS IF USER WON, BY WIN TIME.
+	private void deathAndWinChecker(){
+		if (de.isDeathByDepression() == true){
+			deathByDepression(ge.getTamaName());
+			tg.showGUI(false);
+		}
+		else if(he.isDeathByHunger() == true){
+			deathByHunger(ge.getTamaName());
+			tg.showGUI(false);
+		}
+		else if (isWin() == true){
+			winning(ge.getTamaName());
+			tg.showGUI(false);
 		}
 	}
 

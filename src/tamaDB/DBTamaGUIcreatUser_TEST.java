@@ -1,24 +1,21 @@
 package tamaDB;
 
-
-import javax.swing.JFrame;
-import javax.swing.JTextField;
-import javax.swing.JButton;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-
-import javax.swing.JTextArea;
-
+import java.awt.Color;
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Toolkit;
-import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 import tamaSystem.GameEngine;
 
-public class DBTamaGUICreateUser {
+public class DBTamaGUIcreatUser_TEST {
 
 	public JFrame frame;
 	private JTextField textFieldUserName;
@@ -26,39 +23,34 @@ public class DBTamaGUICreateUser {
 	private JTextField txtReenterPassword;
 	private JTextField txtTypeInCatcha;
 	private JTextArea textTerms;
+
+	//TERMS OF USE, IS LINKET TO JTextArea, textTerms.
+	private String termsOfUse = "BLALBLALBLABLABLA Tama, "
+			+ "\nIf you accept you sell your soul to the devil, and Elvise ";
 	private JTextField txtEnterEmail;
 
 
-	private DBTamaGUILogIn dbtgli;
-	private DBUserEngine dbue;
-	private DBTamaGUICreateUser dbtgcu;
-
-	//TERMS OF USE, IS LINKET TO JTextArea, textTerms.
-	//SELF NOTE: Make up a awesome terms of use. If lady/girl over 18
-	//they are legally bound to send naked pics of them self to you.
-	private String termsOfUse = "BLALBLALBLABLABLA Tama, "
-			+ "\nIf you accept you sell your soul to the devil, and Elvise ";
-
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					DBTamaGUIcreatUser_TEST window = new DBTamaGUIcreatUser_TEST();
+					window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
 
 	/**
 	 * Create the application.
 	 */
-	public DBTamaGUICreateUser(DBTamaGUILogIn dbtgli, DBUserEngine dbue, DBTamaGUICreateUser dbtgcu) {
-		this.dbtgli = dbtgli;
-		this.dbue = dbue;
-		this.dbtgcu = dbtgcu;
+	public DBTamaGUIcreatUser_TEST() {
 		initialize();
-	}
-
-	public DBTamaGUICreateUser(){
-	}
-
-	public void tamaGUICreatUserStart(){
-		frame.setVisible(true);			
-	}
-	
-	public void showFrame(){
-		frame.setVisible(true);			
 	}
 
 	/**
@@ -147,29 +139,10 @@ public class DBTamaGUICreateUser {
 		frame.getContentPane().add(txtEnterEmail);
 		txtEnterEmail.setColumns(10);
 	}
-
-
-	//CREATS A USER, CHECKS IF PASSWORD ARE THE SAME AND EMAIL IS CHANGED.
+	//JUST NOTHING I TEST CLASS
 	private void btnCreateUser(){
-		String tmpStr = "Enter Email";
-		try{
-			if (txtEnterPassword.getText().equals(txtReenterPassword.getText()) && !tmpStr.equals(txtEnterEmail.getText())){
-				boolean tmpBooleanPass = true;
-				boolean tmpBooleanMail = true;
-				dbue.createUsers(textFieldUserName.getText(), txtEnterPassword.getText(), tmpBooleanPass, tmpBooleanMail);			
-			}
-			else{
-				dbtgli.popUpMessage("Passwords or Email don't match!");
-			}
-		}
-		catch(Exception e){
-			System.out.println("-ERROR: btnCreateUser");
-		}
 	}
 
 	private void btnBailOut(){
-		dbtgli.showFrame();
-		frame.setVisible(false);
 	}
-	
 }

@@ -7,27 +7,32 @@ import tamaGUI.TamaGUI;
  * This class works with energy/food/hunger
  * It starts with X amount of energy, and every sec it ticks away a bit of the energy.
  * This class also update the graphic on HungerBar and have methods for gain/sink functions.
- * 
- * 
- * 
  *
  */
 
 public class HungerEngine implements Runnable  {
 
 	//
-	//Note: In case future upgrade/change the varible is here.
+	//SELF NOTE: In case future upgrade/change.
 	//
 	private int tamaCurrentHunger = 10000;
-	private int hungerValue = 30;
-	
+	private int hungerValue;
+	public int getHungerValue() {
+		return hungerValue;
+	}
+	public void setHungerValue(int hungerValue) {
+		this.hungerValue = hungerValue;
+	}
+
 	private TamaGUI tg;
 	private GameEngine ge;
 
 	//HUNGER BUILDER TIME, THREAD SLEEPER
+	//1000 MILISEC, NORMAL
 	private final int hungerBuilderTimeValue = 1000;
 
-	//FOOD VALUES, CHANGE IT WITH DB LATER
+	//FOOD VALUES.
+	//SELF NOTE: CHANGE IT WITH DB LATER
 	private final int foodItem1 = 500;
 	private final int foodItem2 = 3000;
 	private final int foodItem3 = 4500;
@@ -76,7 +81,9 @@ public class HungerEngine implements Runnable  {
 		}
 	}
 
-	//GET HUNGER BY TEXT, NOT FUNKTIONALL YET
+	//GET HUNGER BY TEXT. NOT IMPLEMENTED YET.
+	//SELF NOTE: WHEN A USER ASK THE TAMA
+	//IF ITS HUNGRY. THIS METHOD GETS USED TO GET AWNSER.
 	public String tamaHungerTeller(){
 		String getTamaCurrentHunger = null;
 
@@ -113,9 +120,8 @@ public class HungerEngine implements Runnable  {
 		return getTamaCurrentHunger;
 	}
 
-	//CHANGE SYSTEM
-	//
-	//Method for when the Tama dies by hunger
+	//BOOLEAN TO SWITCH TAMA IS DEAD BY HUNGER
+	//SELF NOTE: maybe change system.
 	private void dieByHunger(){
 		if (tamaCurrentHunger <= 0){
 			deathByHunger = true;
@@ -129,7 +135,7 @@ public class HungerEngine implements Runnable  {
 		}
 	}
 
-	//Food items
+	//GAINERS, FOOD ITEMS
 	public void foodItem1(){	
 		tamaCurrentHunger += foodItem1;
 	}
@@ -140,7 +146,7 @@ public class HungerEngine implements Runnable  {
 		tamaCurrentHunger += foodItem3;
 	}
 
-	//lower the energy
+	//LOSES ENERGY
 	public void foodDecreases1(){
 		tamaCurrentHunger += foodDeacreses1;
 	}
@@ -154,21 +160,11 @@ public class HungerEngine implements Runnable  {
 	public boolean isDeathByHunger() {
 		return deathByHunger;
 	}
-	//GET hunger
+	//SET/GET CURRENT HUNGER
 	public int getTamaCurrentHunger() {
 		return tamaCurrentHunger;
 	}
-	//SET hunger
 	public void setTamaCurrentHunger(int tamaCurrentHunger) {
 		this.tamaCurrentHunger = tamaCurrentHunger;
 	}
-
-	public int getHungerValue() {
-		return hungerValue;
-	}
-
-	public void setHungerValue(int hungerValue) {
-		this.hungerValue = hungerValue;
-	}
-
 }
