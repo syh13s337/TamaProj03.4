@@ -1,5 +1,7 @@
 package tamaDB;
 
+import java.sql.SQLException;
+
 /*USER CLASS
  * THIS CLASS WORKS WITH USER/PASSWORD
  * 
@@ -25,8 +27,11 @@ public class DBUserEngine {
 	private String userName;
 	private DBTamaGUILogIn dbtgli;
 	private DBMySQLEngine dbmysqls;
+	private TamaDBEngine tdbe;
+	private int userIdKey;
 
-	public DBUserEngine(DBMySQLEngine dbmysqls, DBTamaGUILogIn dbtgli){
+	public DBUserEngine(DBMySQLEngine dbmysqls, DBTamaGUILogIn dbtgli, TamaDBEngine tdbe){
+		this.tdbe = tdbe;
 		this.dbmysqls = dbmysqls;
 		this.dbtgli = dbtgli;
 	}
@@ -52,25 +57,51 @@ public class DBUserEngine {
 		}
 		else{
 			System.out.println("NOPE!");
-
 		}
 	}
 
-	//LOG IN A USER
+	//LOG IN A USER. MAIN METHOD TO LOG IN/CHECK AND PLAY.
+	//CHECKS WITH KEY IF TAMA IS THERE.
 	//SELF NOTE: When logged in, start the game!
 	//Add game method.
 	public void userLogIn(String userName, String userPassword){
+		boolean booleantmp = false;
 		this.userName=userName;
 		String checkNameAndPass = "SELECT username='" + userName + "' FROM user WHERE password='" + userPassword + "';";
 		dbmysqls.connectionMethod(dbmysqls.getGUI_USERNAME(), dbmysqls.getGUI_PASSWORD());
 		dbmysqls.statementMethod();
 
 		if (dbmysqls.selectMethodSingle(checkNameAndPass).equals("1")){
-			System.out.println("Your logged in!");
+			String tmpStr = dbmysqls.selectMethodSingle("SELECT userid FROM user WHERE username='" + userName + "';");
+			this.userIdKey  = Integer.parseInt(tmpStr); 
+
+			System.out.println("Your logged in! " + userIdKey);
+
+			//IF THERE IS A TAMA, selectMethodTamaStats. AND SEND TAMA INT STATS TO GameEngine.
+			//USE UPDATE SQL TO UPDATE TAMA STATS
+			if(tamaDbChecker(userIdKey) == false){
+				System.out.println("There is a Tama here");
+				dbmysqls.selectMethodTamaStats(userIdKey);
+			}
+			//else if there is no Tama, Insert name and new stats.
+			//Maybe pop up game luncher.
+			else if(tamaDbChecker(userIdKey) == true){
+				tdbe.sendInfo(userIdKey);				
+				System.out.println("No tama! ");
+			}
+
+			booleantmp = true;
+
 		}
 		else{
 			dbtgli.popUpMessage("Problem with loggin!"
 					+ "\nCheck user name and password!");
+		}
+		
+		//STARTS GAME GUI WITH BOOLEAN CHECKER.
+		if (booleantmp == true){
+			tdbe.startGameGUI();
+			dbtgli.hideFrame();
 		}
 	}
 
@@ -88,6 +119,21 @@ public class DBUserEngine {
 			userChecker = false;
 		}
 		return userChecker;
+	}
+
+	private void creatTama(){
+
+	}
+
+	//CHECKS IF THE KEY IS IN USE IN TAMA SAVE, 
+	//IF NOT CREATE A NEW TAMA FROM SCRATCH
+	private boolean tamaDbChecker(int userIdKey){
+		boolean tamaDbChecker = true;
+		String tmpStr = dbmysqls.selectMethodSingle("SELECT userid FROM tamastats WHERE userid='" + userIdKey + "';");
+		if (!tmpStr.equals("nothingHere")){
+			tamaDbChecker = false;
+		}
+		return tamaDbChecker;		
 	}
 
 	/**createUserId, NOT IN USE

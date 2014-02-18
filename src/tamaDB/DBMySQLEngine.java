@@ -14,10 +14,11 @@ import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
  * 
  * This class will work with MySQL.
  * It will get DB and maybe get DB too.
+ * Most methods here takes querys strings from other class.
+ *  
  * 
- * MUST START SOMEWERE WHERE OTHER CLASS CAN GET GAMEVALUES?
  * 
- * 
+ * SELF NOTE:
  * CHECKA INDEX SYTAX/SYSTEM:
  * FOR FASTER SEARCH AND FINIDNG VALUES.
  *
@@ -74,7 +75,9 @@ public class DBMySQLEngine {
 	}
 
 	private String tmpString;
+	//OTHER CLASS
 	private DBTamaGUILogIn dbtgli;
+	private TamaDBEngine tdbe;
 
 	private ArrayList <String> selectMethodSingle;
 	public void clearSelectMethodSingleArray(){
@@ -91,8 +94,9 @@ public class DBMySQLEngine {
 		getGameValue();
 	}
 
-	public DBMySQLEngine(DBTamaGUILogIn dbtgli){
+	public DBMySQLEngine(DBTamaGUILogIn dbtgli, TamaDBEngine tdbe){
 		this.dbtgli = dbtgli;
+		this.tdbe = tdbe;
 	}
 
 	public DBMySQLEngine(){
@@ -141,6 +145,69 @@ public class DBMySQLEngine {
 		System.out.println("Adected rows: " + affectedRows);
 	}
 
+	//WORKING,
+	//SELF NOTE: Change to prepared statments later!
+	public void saveStats(int userIdKey, String tamaName, int gameLevel,
+			int hungerStats, int depressionStats, int moneyStats, int tmpInt){
+
+		System.out.println(tmpInt);
+		System.out.println("INSERT INTO dbprojecttama.tamastats (`userid`, `tamaname`, `gamelevel`, `hungerstats`, `depressionstats`, `moneystats`) VALUES ('"+userIdKey+"','"+tamaName+"','"+gameLevel+"','"+hungerStats+"','"+depressionStats+ "','"+moneyStats+ "');");
+
+		try {
+			if (tmpInt == 1){
+				queryCaller.executeUpdate("INSERT INTO dbprojecttama.tamastats (`userid`, `tamaname`, `gamelevel`, `hungerstats`, `depressionstats`, `moneystats`) VALUES ('"+userIdKey+"','"+tamaName+"','"+gameLevel+"','"+hungerStats+"','"+depressionStats+ "','"+moneyStats+ "');");
+			
+			}
+			else if (tmpInt == 2){
+				queryCaller.executeUpdate("UPDATE `dbprojecttama`.`tamastats` SET `hungerstats`='" + hungerStats + "', `depressionstats`='"+ depressionStats +"',`moneystats`='"+ moneyStats +"'  WHERE `userid`='"+userIdKey+"';");				
+			}
+			
+		} catch (SQLException e) {
+			System.out.println("-ERROR: saveStats");
+		}
+
+
+
+	}
+
+	//FOR SAVING, NOT WORKING
+	public void preparedStatmentsForSave(int userIdKey, String tamaName, int gameLevel,
+			int hungerStats, int depressionStats, int moneyStats){
+
+		try {
+			psStream = con.prepareStatement("INSERT INTO dbprojecttama.tamastats ('userid', 'tamaname', 'gamelevel', 'hungerstats', 'depressionstats', 'moneystats') VALUES (?, ?, ?, ?, ?, ?);");
+			psStream.setInt(1, userIdKey);
+			psStream.setString(2, tamaName);
+			psStream.setInt(3, gameLevel);
+			psStream.setInt(4, hungerStats);
+			psStream.setInt(5, depressionStats);
+			psStream.setInt(6, moneyStats);
+
+			psStream.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println("-ERROR: preparedStatmentsForSave");
+		}
+	}
+
+	//FOR UPDATING, NOT WORKING
+	public void preparedStatmentsForUpdate(int userIdKey, String tamaName, int gameLevel,
+			int hungerStats, int depressionStats, int moneyStats){
+		try {
+			psStream = con.prepareStatement("UPDATE dbprojecttama.tamastats SET 'tamaname'=?, 'gamelevel'=?, 'hungerstats'=?, 'depressionstats'=?, 'moneystats'=? WHERE 'userid'=?;");
+			psStream.setString(1, tamaName);
+			psStream.setInt(2, gameLevel);
+			psStream.setInt(3, hungerStats);
+			psStream.setInt(4, depressionStats);
+			psStream.setInt(5, moneyStats);
+			psStream.setInt(6, userIdKey);
+
+			psStream.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println("-ERROR: preparedStatmentsForUpdate");
+		}
+	}
+
+
 	//NOT FULLY WORKING YET
 	public void preparedStatementMethod(String psString, String statementString){
 		try {
@@ -154,6 +221,7 @@ public class DBMySQLEngine {
 	}
 
 	//SELECT AND GETS INFO, NEED QUERYES
+	//NOT IN USE.
 	public void selectMethod(String querys){
 		try {
 			//SELECT
@@ -206,8 +274,13 @@ public class DBMySQLEngine {
 		try {
 			result = queryCaller.executeQuery(querys);
 			result.first();
-
-			tmpString = result.getString(1);
+			try{
+				tmpString = result.getString(1);	
+			}
+			catch (SQLException e1) {
+				//ERROR MESSAGE IF RESULT TO STRING IS NULL
+				tmpString = "nothingHere";
+			}
 
 		} catch (SQLException e) {
 			System.out.println("-ERROR: queryCaller" + e.getMessage());
@@ -216,7 +289,39 @@ public class DBMySQLEngine {
 		return tmpString;
 	}
 
+	//METHOD THAT GETS TAMA STATS FROM SAVED TAMA
+	//SENDS INFORMATION TO TamaDBEngine
+	public void selectMethodTamaStats(int userId){
+		String querys = "SELECT * FROM tamastats WHERE userid='" + userId + "';";
+
+		try {
+			result = queryCaller.executeQuery(querys);
+			result.first();
+
+			long tmpUserId = result.getLong(1);	
+			String tamaName = result.getString(2);	
+			long tmpGameLevel = result.getLong(3);	
+			long tmpHungerStats = result.getLong(4);	
+			long tmpDepressionStats = result.getLong(5);	
+			long tmpMoneyStats = result.getLong(6);	
+
+			int userIdKey = (int)tmpUserId;
+			int gameLevel = (int)tmpGameLevel;
+			int hungerStats = (int)tmpHungerStats;
+			int depressionStats = (int)tmpDepressionStats;
+			int moneyStats = (int)tmpMoneyStats;
+
+			tdbe.tamaStats(userIdKey, tamaName, gameLevel,
+					hungerStats, depressionStats, moneyStats);
+
+		} catch (SQLException e) {
+			System.out.println("-ERROR: queryCaller" + e.getMessage());
+		}
+		System.out.println("*SUCCSESS: queryCaller");
+	}
+
 	//EASY GET RESULT SET FROM QUERY STRING METHOD
+	//NOT IN USE.
 	//SELF NOTE: Make this main result.
 	public ResultSet getResult(String querys){
 		try {
@@ -224,8 +329,6 @@ public class DBMySQLEngine {
 		} catch (SQLException e) {
 			System.out.println("-ERROR: getResult");
 		}
-
-
 		return result;
 	}
 
@@ -244,8 +347,6 @@ public class DBMySQLEngine {
 					tmpColumnCounter++;
 				}
 			}
-
-
 		} catch (SQLException e) {
 			System.out.println("-QueryCaller ERROR!" + e.getMessage()); //TESTER
 		}

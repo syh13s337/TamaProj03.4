@@ -55,13 +55,14 @@ public class GameEngine {
 	private TamaGUI tg;
 	private TamaGUIFace tgf;
 
+	private String frameTitle = "   ";
 	private int moneyValue;
 	private int depressionValue;
 	private int energyValue;
 	private int foodValue;
 	private int happinessValue;
 
-
+	//TAMASTATS VALUES AND UserID
 	private String tamaName = "";
 	public String getTamaName() {
 		return tamaName;
@@ -77,6 +78,18 @@ public class GameEngine {
 	public void setGameLevel(int gameLevel) {
 		this.gameLevel = gameLevel;
 	}
+	private	int userIdKey; 
+	public int getUserIdKey() {
+		return userIdKey;
+	}
+	public void setUserIdKey(int userIdKey) {
+		this.userIdKey = userIdKey;
+	}
+	private	int hungerStats;
+	private	int depressionStats;
+	private	int moneyStats; //SAME AS moneyValue BUT FROM DB.
+
+	private boolean tamaInDataBase = false;
 
 	private void initiater(){
 		this.tg = new TamaGUI();
@@ -113,36 +126,73 @@ public class GameEngine {
 		tgfEngine.start();
 	}
 
-	//LOGIN LUNCHER TO DB.
-	//SELF NOTE: Start everything from GameEngine
-	//or let the DBEngine start game.
-	public void StartLogIn(){
+	//START GAME AFTER DB
+	public void startGameGUI(){
+		if (tamaInDataBase == true){
+			GameGUIWithStats(gameLevel, frameTitle, tamaName);		
+		}
+		else if (tamaInDataBase == false) {
+			GameGuiStart();
+			tamaInDataBase = false;
+		}
 	}
 
+	//GAME LUNCHER. BEFORE GAME GUI
+	//STARTS THIS WHEN NO TAMA IN DB
 	//LAUNCHER AFTER LOG ING
 	public void GameGuiStart(){
 		tgs = new TamaGUIStart();
 		tgs.TamaStartGUIStarter(ge);
 	}
-
-	//THE MAIN GAME GUI
-	//SELF NOTE: Now with gameValues from DB.
-	public void GameGUI(int gameLevel, String frameTitle, String tamaName){
-		initiater();
-
+	
+	//START GAME GUI WITOUTH STATS THAT IS SAVED FROM DB
+	private void GameGUIWithStats(int gameLevel, String frameTitle, String tamaName){
 		this.tamaName = tamaName;
 		this.gameLevel = gameLevel;
-
-		tg.TamaGUI(gameLevel, frameTitle, tamaName, he, mo, di, tt, de);
+		this.frameTitle = frameTitle;
+		tg.TamaGUI(gameLevel, frameTitle, tamaName, he, mo, di, tt, de, ge);
 		this.tgf = new TamaGUIFace(ge, tg, de, he);
-		
-		tdbe.gameValue();
-			
+		tdbe.gameValue(); 
+		mo.setMoneyValue(moneyStats);
 		threadStarter();
-
 		tg.showGUI(true);
 	}
 
+	//THE MAIN GAME GUI,
+	//SELF NOTE: Should start this if there is already a Tama.
+	//THE MAIN GAME GUI
+	//SELF NOTE: Now with gameValues from DB.
+	public void GameGUIWithoutStats(int gameLevel, String frameTitle, String tamaName){
+		initiater();
+		this.tamaName = tamaName;
+		this.gameLevel = gameLevel;
+		this.frameTitle = frameTitle;
+		tg.TamaGUI(gameLevel, frameTitle, tamaName, he, mo, di, tt, de, ge);
+		this.tgf = new TamaGUIFace(ge, tg, de, he);
+		tdbe.gameValue();
+		he.setTamaCurrentHunger(10000);
+		de.setTamaCurrentDepression(10000);
+		threadStarter();
+		tg.showGUI(true);
+	}
+
+	//GETS STATS FROM OTHER CLASSES AND SENDS IT TO TamaDBEngine
+	public void saveTama(){
+		if(tamaInDataBase == false){
+			tdbe.saveStats(userIdKey, tamaName, gameLevel, he.getTamaCurrentHunger(),
+					de.getTamaCurrentDepression(), mo.getCurrentMoney());
+		}
+		
+		else if (tamaInDataBase == true){
+			tdbe.updateStats(userIdKey, tamaName, gameLevel, he.getTamaCurrentHunger(),
+					de.getTamaCurrentDepression(), mo.getCurrentMoney());		
+			
+		}
+
+		
+	}
+	
+	//GETS GAME VALUES FROM TamaDBEngine CLASS AND SETT THEM TO OTHER CLASSES.
 	//METHOD THAT SETS THE VALUES BY GAME LEVEL.
 	//AND SENDS VALUES TO ITS CLASSES.
 	//NEED TamaDBEngine, WHERE IT GETS VALUES FROM DB.
@@ -177,6 +227,33 @@ public class GameEngine {
 		de.setDepressionValue(depressionValue);
 		he.setHungerValue(energyValue);
 	}
+
+	//GETS TamaStats FROM TamaDBEngine AND SETS THEM TO THIS CLASS AND OTHER CLASSES.
+	//SHOULD START AUTOMATIC IF THERE IS A TAMA IN DB.
+	public void tamaStatsSetter(int userIdKey, String tamaName, int gameLevel, int hungerStats,
+			int depressionStats, int moneyStats, boolean tamaInDataBase){
+		initiater();
+		this.tamaInDataBase = tamaInDataBase;
+		this.userIdKey = userIdKey;
+		this.tamaName = tamaName;
+		this.gameLevel = gameLevel;
+		this.hungerStats = hungerStats;
+		this.depressionStats = depressionStats;
+		this.moneyStats = moneyStats; 
+		
+		he.setTamaCurrentHunger(hungerStats);
+		de.setTamaCurrentDepression(depressionStats);
+		mo.setMoneyValue(moneyStats);
+
+		//TEST
+		System.out.println("userID: " + userIdKey + " TamaName: " + tamaName);
+		System.out.println("GameLevel: " + gameLevel + " HungerStats: " + hungerStats);
+		System.out.println("DepressionStats: " + depressionStats + " MoneyStats: " + moneyStats);
+	}
+	
+	
+	
+	
 }
 
 

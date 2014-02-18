@@ -7,7 +7,6 @@ import tamaGUI.TamaGUI;
  * The class that handles depression.
  * Looped a ticker and checkers.
  * Updater for the DepressionBar
-
  *
  */
 public class DepressionEngine implements Runnable {
@@ -22,7 +21,13 @@ public class DepressionEngine implements Runnable {
 		this.depressionValue = depressionValue;
 	}
 
-	private int tamaCurrentDepression = 10000;
+	private int tamaCurrentDepression;
+	public int getTamaCurrentDepression() {
+		return tamaCurrentDepression;
+	}
+	public void setTamaCurrentDepression(int tamaCurrentDepression) {
+		this.tamaCurrentDepression = tamaCurrentDepression;
+	}
 	private int mouseHappiness = 20;
 	private int mouseHappinessSinker = 20;
 	private Random intGenerator = new Random();
@@ -135,11 +140,4 @@ public class DepressionEngine implements Runnable {
 	public boolean isDeathByDepression() {
 		return deathByDepression;
 	}
-	public int getTamaCurrentDepression() {
-		return tamaCurrentDepression;
-	}
-	public void setTamaCurrentDepression(int tamaCurrentDepression) {
-		this.tamaCurrentDepression = tamaCurrentDepression;
-	}
-
 }

@@ -66,6 +66,11 @@ public class DBTamaGUILogIn {
 		frameLogIn.setVisible(true);		
 	}
 
+
+	public void hideFrame(){
+		frameLogIn.setVisible(false);		
+	}
+
 	public DBTamaGUILogIn() {
 		initialize();
 	}

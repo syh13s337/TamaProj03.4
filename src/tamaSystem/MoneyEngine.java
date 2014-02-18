@@ -44,11 +44,10 @@ public class MoneyEngine implements Runnable{
 			if(currentMoney <= 0){
 				currentMoney = 0;
 			}
-			tg.setMoneyBar();
+			tg.setMoneyBar(currentMoney);
 			TamaFoundMoney();
 			TamaStealMoney();
 			moneyBarUpdaterTimer(1000);
-
 		}
 	}
 

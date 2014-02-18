@@ -28,7 +28,6 @@ public class DBTamaGUICreateUser {
 	private JTextArea textTerms;
 	private JTextField txtEnterEmail;
 
-
 	private DBTamaGUILogIn dbtgli;
 	private DBUserEngine dbue;
 	private DBTamaGUICreateUser dbtgcu;
@@ -38,7 +37,6 @@ public class DBTamaGUICreateUser {
 	//they are legally bound to send naked pics of them self to you.
 	private String termsOfUse = "BLALBLALBLABLABLA Tama, "
 			+ "\nIf you accept you sell your soul to the devil, and Elvise ";
-
 
 	/**
 	 * Create the application.

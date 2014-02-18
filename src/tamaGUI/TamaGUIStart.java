@@ -39,6 +39,7 @@ public class TamaGUIStart extends JFrame {
 
 	private GameEngine ge;
 	
+	//SELF NOTE: Make new game info text
 	private String gameInfoString = "Hi! You are now playing: " + GameEngine.TAMA_VERSION 
 			+ "\n"
 			+ "\nThe levels:"
@@ -67,7 +68,6 @@ public class TamaGUIStart extends JFrame {
 							+ "\nMail at: arildoderman@gmail.com"
 							+ "\n"
 							+ "\nUpdate inc soon!";
-	
 	
 	//the starter, with own runnable
 	public void TamaStartGUIStarter(GameEngine ge){
@@ -121,7 +121,7 @@ public class TamaGUIStart extends JFrame {
 					tamaName = txtEnterTamaName.getText();
 					frmTamav.setVisible(false);
 
-					ge.GameGUI(1, " Baby (EasyMode) ", tamaName);
+					ge.GameGUIWithoutStats(1, " Baby (EasyMode) ", tamaName);
 
 				}
 				else {	
@@ -141,7 +141,7 @@ public class TamaGUIStart extends JFrame {
 					tamaName = txtEnterTamaName.getText();
 					frmTamav.setVisible(false);
 
-					ge.GameGUI(2, " The Kid (NormalMode) ", tamaName);
+					ge.GameGUIWithoutStats(2, " The Kid (NormalMode) ", tamaName);
 
 				}
 				else {	
@@ -160,7 +160,7 @@ public class TamaGUIStart extends JFrame {
 					tamaName = txtEnterTamaName.getText();
 					frmTamav.setVisible(false);
 
-					ge.GameGUI(3, " Young Adult (HardMode) ", tamaName);
+					ge.GameGUIWithoutStats(3, " Young Adult (HardMode) ", tamaName);
 
 
 				}
@@ -173,6 +173,7 @@ public class TamaGUIStart extends JFrame {
 		btnStartLv3.setBounds(12, 92, 97, 25);
 		frmTamav.getContentPane().add(btnStartLv3);
 
+		//INFO AND GAME INFO BUTTON.
 		JButton btnAbout = new JButton("About");
 		btnAbout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

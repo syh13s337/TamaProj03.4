@@ -13,6 +13,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 
 import tamaDialogs.DialogEngine;
@@ -64,6 +65,7 @@ public class TamaGUI extends JFrame implements MouseListener {
 	private ArrayList <String> tooltips = new ArrayList<String>();
 	private ArrayList <String> infoText = new ArrayList<String>();
 
+	private JButton btnLogOut;
 	private JButton btnPlay1;
 	private JButton btnPlay2;
 	private JButton btnFood1;
@@ -100,13 +102,15 @@ public class TamaGUI extends JFrame implements MouseListener {
 	private MoneyEngine mo;
 	private DialogEngine di; //NOT IN USE YET, FUTURE FUNKTIONS!
 	private TalkingToTamaEngine tt;
+	private GameEngine ge;
+
 
 	public TamaGUI(){
 	}
 
 	//THE MAIN METHOD TO GET OBJECT FOR GUI
 	public void TamaGUI(int lvNr, String frameTitle, String tamaName, HungerEngine he, MoneyEngine mo,
-			DialogEngine di, TalkingToTamaEngine tt, DepressionEngine de) {
+			DialogEngine di, TalkingToTamaEngine tt, DepressionEngine de, GameEngine ge) {
 		gameLevel = lvNr;
 		buttonNames(lvNr);
 		initialize(frameTitle, tamaName);
@@ -117,6 +121,8 @@ public class TamaGUI extends JFrame implements MouseListener {
 		this.di = di;
 		this.tt = tt;
 		this.de = de;
+		this.ge = ge;
+
 	}
 
 	//TAKES IN A BOOLEAN TO SHOW/HIDE GUI FRAME
@@ -173,6 +179,17 @@ public class TamaGUI extends JFrame implements MouseListener {
 		//for animation
 		label.setBounds(142, 46, 201, 244);
 		GUIFrame.add(label);	
+
+		//LOG OUT BUTTON, SAVES TAMA STATS
+		btnLogOut = new JButton("Log Out");
+		btnLogOut.setToolTipText("Log Out");
+		btnLogOut.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				buttonLogOut();
+			}
+		});
+		btnLogOut.setBounds(15, 10, 115, 29);
+		GUIFrame.getContentPane().add(btnLogOut);
 
 		//PLAY BUTTON LEVEL 1
 		btnPlay1 = new JButton(buttonNames.get(0));
@@ -350,36 +367,35 @@ public class TamaGUI extends JFrame implements MouseListener {
 	}
 
 	//SET AND UPDATE MONEYBAR, TRIGGED BY MONEYENGINE CLASS
-	public void setMoneyBar(){
-		int moneyValue = mo.getCurrentMoney();
-		moneyBar.setString(Integer.toString(moneyValue) + " Pesoh");
+	public void setMoneyBar(int currentMoney){
+		moneyBar.setString(Integer.toString(currentMoney) + " Pesoh");
 		moneyBar.setForeground(Color.BLUE);
 
-		if(moneyValue <= 0){
+		if(currentMoney <= 0){
 			moneyBar.setValue(0);
 		}
-		else if(moneyValue <= 1000){
+		else if(currentMoney <= 1000){
 			moneyBar.setValue(10);
 		}
 
-		else if(moneyValue <= 2500){
+		else if(currentMoney <= 2500){
 			moneyBar.setValue(25);
 		}
 
-		else if(moneyValue <= 3500){
+		else if(currentMoney <= 3500){
 			moneyBar.setValue(35);
 		}
-		else if(moneyValue <= 5000){
+		else if(currentMoney <= 5000){
 			moneyBar.setValue(50);
 		}
-		else if (moneyValue <= 7500){
+		else if (currentMoney <= 7500){
 			moneyBar.setValue(75);
 		}
-		else if (moneyValue <= 9000){
+		else if (currentMoney <= 9000){
 			moneyBar.setValue(90);
 		}
-		else if (moneyValue <= 10000){
-			moneyBar.setValue(10000);
+		else if (currentMoney <= 10000){
+			moneyBar.setValue(100);
 		}
 
 	}
@@ -441,6 +457,12 @@ public class TamaGUI extends JFrame implements MouseListener {
 	//ANIMATION UPDATER
 	public void labelUpdater(ImageIcon tmp){
 		label.setIcon(tmp);
+	}
+	
+	//LOG OUT BUTTON 
+	private void buttonLogOut(){
+		ge.saveTama();
+		popUpMessageLogOut();
 	}
 
 	private void buttonPlay1(){
@@ -584,4 +606,22 @@ public class TamaGUI extends JFrame implements MouseListener {
 	public void mouseReleased(MouseEvent arg0) {
 	}
 
+	//POPUP
+	//SELF NOT: Send everything that user need to know here! Future Arild!
+	public void popUpMessage(String inStr){
+		JOptionPane.showMessageDialog(null, inStr, GameEngine.TAMA_VERSION + "Messages! ", JOptionPane.ERROR_MESSAGE); 		
+	}
+	
+	private void popUpMessageLogOut(){
+		int message = JOptionPane.showConfirmDialog(null, "Your Tama is saved! \nWana exit? ", GameEngine.TAMA_VERSION + "Messages! "
+				, JOptionPane.ERROR_MESSAGE, JOptionPane.OK_OPTION); 		
+		
+		if (message == JOptionPane.OK_OPTION){
+			System.exit(0);
+		}
+	
+		
+		
+	}
+		
 }

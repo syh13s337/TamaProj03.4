@@ -11,12 +11,13 @@ public class TESTStart {
 		GameEngine ge = new GameEngine();
 		ge.setGe(ge);
 		TamaDBEngine tdbe = new TamaDBEngine(ge);
+		tdbe.setTdbe(tdbe);
 		ge.setTdbe(tdbe);
 		
 		tdbe.StartLogIn();
 		
 		
 		//TEST
-		ge.GameGuiStart();
+//		ge.GameGuiStart();
 	}
 }

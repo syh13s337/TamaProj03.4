@@ -15,7 +15,14 @@ public class HungerEngine implements Runnable  {
 	//
 	//SELF NOTE: In case future upgrade/change.
 	//
-	private int tamaCurrentHunger = 10000;
+	private int tamaCurrentHunger;
+	public int getTamaCurrentHunger() {
+		return tamaCurrentHunger;
+	}
+	public void setTamaCurrentHunger(int tamaCurrentHunger) {
+		this.tamaCurrentHunger = tamaCurrentHunger;
+	}
+	
 	private int hungerValue;
 	public int getHungerValue() {
 		return hungerValue;
@@ -159,12 +166,5 @@ public class HungerEngine implements Runnable  {
 
 	public boolean isDeathByHunger() {
 		return deathByHunger;
-	}
-	//SET/GET CURRENT HUNGER
-	public int getTamaCurrentHunger() {
-		return tamaCurrentHunger;
-	}
-	public void setTamaCurrentHunger(int tamaCurrentHunger) {
-		this.tamaCurrentHunger = tamaCurrentHunger;
 	}
 }
