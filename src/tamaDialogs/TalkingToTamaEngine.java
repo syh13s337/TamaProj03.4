@@ -47,8 +47,8 @@ public class TalkingToTamaEngine {
 
 	//dont have time right now generator
 	public void dontHaveTimeATMStr(){
-		if(dialogLevel == 0){
-			tg.setTextArea("..." + "The tolder seams to like your voice " + "\n");
+		if(dialogLevel == 1){
+			tg.setTextArea("..." + "The todler seams to like your voice " + "\n");
 
 		}
 		else if (dialogLevel == 2){
@@ -69,4 +69,6 @@ public class TalkingToTamaEngine {
 	public void setDialogLevel(int x){
 		this.dialogLevel = dialogLevel + x;		
 	}
+	
+	
 }

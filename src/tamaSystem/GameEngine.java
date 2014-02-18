@@ -16,7 +16,7 @@ import tamaGUI.TamaGUIStart;
 public class GameEngine {
 
 	//GAME VERSION, OH SNAP ITS STATIC!
-	public static String TAMA_VERSION = "<TamaProj 03.4> ";
+	public static String TAMA_VERSION = "<TamaProj 03.5> ";
 	public static String MADE_BY = "Arild Oderman";
 
 	//THE LOOP/ENGINE STOPPER, SHOULD BE CONNECTED TO ALL "4EVER" LOOPED THREAD.
@@ -47,7 +47,6 @@ public class GameEngine {
 	TamaDBEngine tdbe;
 	public void setTdbe(TamaDBEngine tdbe) {
 		this.tdbe = tdbe;
-
 	}
 
 	private TamaGUIEnd tge;
@@ -87,7 +86,7 @@ public class GameEngine {
 	}
 	private	int hungerStats;
 	private	int depressionStats;
-	private	int moneyStats; //SAME AS moneyValue BUT FROM DB.
+	private	int moneyStats; 
 
 	private boolean tamaInDataBase = false;
 
@@ -180,12 +179,11 @@ public class GameEngine {
 	public void saveTama(){
 		if(tamaInDataBase == false){
 			tdbe.saveStats(userIdKey, tamaName, gameLevel, he.getTamaCurrentHunger(),
-					de.getTamaCurrentDepression(), mo.getCurrentMoney());
-		}
-		
+					de.getTamaCurrentDepression(), mo.getCurrentMoney(), se.getTheScore());
+		}		
 		else if (tamaInDataBase == true){
 			tdbe.updateStats(userIdKey, tamaName, gameLevel, he.getTamaCurrentHunger(),
-					de.getTamaCurrentDepression(), mo.getCurrentMoney());		
+					de.getTamaCurrentDepression(), mo.getCurrentMoney(), se.getTheScore());		
 			
 		}
 
@@ -231,7 +229,7 @@ public class GameEngine {
 	//GETS TamaStats FROM TamaDBEngine AND SETS THEM TO THIS CLASS AND OTHER CLASSES.
 	//SHOULD START AUTOMATIC IF THERE IS A TAMA IN DB.
 	public void tamaStatsSetter(int userIdKey, String tamaName, int gameLevel, int hungerStats,
-			int depressionStats, int moneyStats, boolean tamaInDataBase){
+			int depressionStats, int moneyStats, int scoreStats, boolean tamaInDataBase){
 		initiater();
 		this.tamaInDataBase = tamaInDataBase;
 		this.userIdKey = userIdKey;
@@ -244,6 +242,7 @@ public class GameEngine {
 		he.setTamaCurrentHunger(hungerStats);
 		de.setTamaCurrentDepression(depressionStats);
 		mo.setMoneyValue(moneyStats);
+		se.setTheScore(scoreStats);
 
 		//TEST
 		System.out.println("userID: " + userIdKey + " TamaName: " + tamaName);
@@ -251,8 +250,12 @@ public class GameEngine {
 		System.out.println("DepressionStats: " + depressionStats + " MoneyStats: " + moneyStats);
 	}
 	
-	
-	
+	//GETS points, TamaName, deathBy FOR SCORE DB
+	//SENDS IT TO TamaDBEngine
+	public void tamaDied(String deathBy){
+		int tmpInt = se.getTheScore();
+		tdbe.saveScoreToDB(this.userIdKey, this.tamaName, tmpInt, deathBy);
+	}
 	
 }
 

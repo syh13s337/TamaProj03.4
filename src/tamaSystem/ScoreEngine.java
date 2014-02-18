@@ -21,7 +21,6 @@ public class ScoreEngine implements Runnable {
 		this.theScore = theScore;
 	}
 
-	private double scoreCounter;
 	private double hAlive;
 	private double dAlive;
 	private double mAlive;
@@ -35,9 +34,9 @@ public class ScoreEngine implements Runnable {
 	}
 
 	//THE LOOP
+	//COUNTS THE SCORE BY ADDING 10 POINTS * GAME LEVEL.
 	@Override
 	public void run() {
-		scoreCounter = 0;
 		int z = 1;
 		while(z == 1){
 			if (ge.isALL_TREADS_RUNNING() == false){
@@ -47,7 +46,7 @@ public class ScoreEngine implements Runnable {
 			}
 			else if (ge.isALL_TREADS_RUNNING() == true){
 				try {
-					this.scoreCounter += 10;
+					this.theScore += 10 * ge.getGameLevel();
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -62,10 +61,10 @@ public class ScoreEngine implements Runnable {
 	//make it so that 1h in real life is 1 year in Tama time
 	//Maybe make the method return to string value for better coding.
 	public void totalAliveTime(){
-		hAlive = scoreCounter/6;
-		dAlive = scoreCounter/144;
-		mAlive = scoreCounter/4320;
-		yAlive = scoreCounter/51840;
+		hAlive = theScore/6;
+		dAlive = theScore/144;
+		mAlive = theScore/4320;
+		yAlive = theScore/51840;
 
 		tge.setTextEndInfo("Total Alive Time, in Tama Time: "
 				+ "\n"
@@ -73,7 +72,7 @@ public class ScoreEngine implements Runnable {
 				+ "\nDays Alive: " + df.format(dAlive)
 				+ "\nMonth Alive: " + df.format(mAlive)
 				+ "\nYears Alive: " + df.format(yAlive)
-				+ "\nyour score is: " + (scoreCounter) +"\n");
+				+ "\nyour score is: " + (theScore) +"\n");
 	}
 }
 

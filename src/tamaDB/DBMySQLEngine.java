@@ -145,78 +145,104 @@ public class DBMySQLEngine {
 		System.out.println("Adected rows: " + affectedRows);
 	}
 
-	//WORKING,
-	//SELF NOTE: Change to prepared statments later!
-	public void saveStats(int userIdKey, String tamaName, int gameLevel,
-			int hungerStats, int depressionStats, int moneyStats, int tmpInt){
-
-		System.out.println(tmpInt);
-		System.out.println("INSERT INTO dbprojecttama.tamastats (`userid`, `tamaname`, `gamelevel`, `hungerstats`, `depressionstats`, `moneystats`) VALUES ('"+userIdKey+"','"+tamaName+"','"+gameLevel+"','"+hungerStats+"','"+depressionStats+ "','"+moneyStats+ "');");
-
+	public void createUser(String userName, String userPassword, String userEmail){
+		System.out.println("INSERT INTO `dbprojecttama`.`user` (`username`, `password`, `usermail`) VALUES ('"+ userName +"', '"+ userPassword +"', '"+ userEmail +"');");
 		try {
-			if (tmpInt == 1){
-				queryCaller.executeUpdate("INSERT INTO dbprojecttama.tamastats (`userid`, `tamaname`, `gamelevel`, `hungerstats`, `depressionstats`, `moneystats`) VALUES ('"+userIdKey+"','"+tamaName+"','"+gameLevel+"','"+hungerStats+"','"+depressionStats+ "','"+moneyStats+ "');");
-			
-			}
-			else if (tmpInt == 2){
-				queryCaller.executeUpdate("UPDATE `dbprojecttama`.`tamastats` SET `hungerstats`='" + hungerStats + "', `depressionstats`='"+ depressionStats +"',`moneystats`='"+ moneyStats +"'  WHERE `userid`='"+userIdKey+"';");				
-			}
-			
+			queryCaller.executeUpdate("INSERT INTO `dbprojecttama`.`user` (`username`, `password`, `usermail`) VALUES ('"+ userName +"', '"+ userPassword +"', '"+ userEmail +"');");
+
 		} catch (SQLException e) {
-			System.out.println("-ERROR: saveStats");
+			System.out.println("-ERROR: createUser" + e.getMessage());
 		}
-
-
-
 	}
 
-	//FOR SAVING, NOT WORKING
-	public void preparedStatmentsForSave(int userIdKey, String tamaName, int gameLevel,
-			int hungerStats, int depressionStats, int moneyStats){
+	//NOT IN USE, BACK UP.
+	//SELF NOTE: Change to prepared statments later!
+	public void saveStats(int userIdKey, String tamaName, int gameLevel,
+			int hungerStats, int depressionStats, int moneyStats, int scoreStats, int tmpInt){
 
+			if (tmpInt == 1){
+				preparedStatmentsForSave(userIdKey, tamaName, gameLevel, hungerStats, depressionStats, moneyStats, scoreStats);
+			}
+			else if (tmpInt == 2){
+				preparedStatmentsForUpdate(userIdKey, tamaName, gameLevel, hungerStats, depressionStats, moneyStats, scoreStats);
+			}
+	}
+
+	
+	//FOR SAVING SCORE TO DB
+	public void saveScoreToDB(int userIdKey, String tamaName, int theScore, String deathBy){
+		System.out.println("INSERT INTO dbprojecttama.scores (userid, tamaname, totalpoints, deathby) VALUES ("+userIdKey+", "+tamaName+", "+theScore+", "+deathBy+")");
 		try {
-			psStream = con.prepareStatement("INSERT INTO dbprojecttama.tamastats ('userid', 'tamaname', 'gamelevel', 'hungerstats', 'depressionstats', 'moneystats') VALUES (?, ?, ?, ?, ?, ?);");
+			psStream = con.prepareStatement("INSERT INTO dbprojecttama.scores (userid, tamaname, totalpoints, deathby) VALUES (?, ?, ?, ?)");
+			psStream.setInt(1, userIdKey);
+			psStream.setString(2, tamaName);
+			psStream.setInt(3, theScore);
+			psStream.setString(4, deathBy);
+			psStream.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println("-ERROR: saveScoreToDB" + e.getMessage());
+		}
+	}
+
+	//FOR SAVING TAMA STATS, INSERT
+	public void preparedStatmentsForSave(int userIdKey, String tamaName, int gameLevel,
+			int hungerStats, int depressionStats, int moneyStats, int scoreStats){
+		try {
+			psStream = con.prepareStatement("INSERT INTO dbprojecttama.tamastats (userid, tamaname, gamelevel, hungerstats, depressionstats, moneystats, scorestats) VALUES (?, ?, ?, ?, ?, ?, ?)");
 			psStream.setInt(1, userIdKey);
 			psStream.setString(2, tamaName);
 			psStream.setInt(3, gameLevel);
 			psStream.setInt(4, hungerStats);
 			psStream.setInt(5, depressionStats);
 			psStream.setInt(6, moneyStats);
-
+			psStream.setInt(7, scoreStats);
+			
 			psStream.executeUpdate();
 		} catch (SQLException e) {
-			System.out.println("-ERROR: preparedStatmentsForSave");
+			System.out.println("-ERROR: preparedStatmentsForSave" + e.getMessage());
 		}
 	}
 
-	//FOR UPDATING, NOT WORKING
+	//FOR UPDATING TAMA STATS, UPDATE
 	public void preparedStatmentsForUpdate(int userIdKey, String tamaName, int gameLevel,
-			int hungerStats, int depressionStats, int moneyStats){
+			int hungerStats, int depressionStats, int moneyStats, int scoreStats){
+		//TEST
+		System.out.println("User ID: " + userIdKey);
+		System.out.println("TamaName: " + tamaName);
+		System.out.println("HungerStats: " + hungerStats);
+		System.out.println("DepressionStats: " + depressionStats);
+		System.out.println("MoneyStats: " + moneyStats);
+		System.out.println("Score: " + scoreStats);
+		
 		try {
-			psStream = con.prepareStatement("UPDATE dbprojecttama.tamastats SET 'tamaname'=?, 'gamelevel'=?, 'hungerstats'=?, 'depressionstats'=?, 'moneystats'=? WHERE 'userid'=?;");
+			psStream = con.prepareStatement("UPDATE dbprojecttama.tamastats SET tamaname=?, gamelevel=?, hungerstats=?, depressionstats=?, moneystats=?, scorestats=? WHERE userid=?;");
 			psStream.setString(1, tamaName);
 			psStream.setInt(2, gameLevel);
 			psStream.setInt(3, hungerStats);
 			psStream.setInt(4, depressionStats);
 			psStream.setInt(5, moneyStats);
-			psStream.setInt(6, userIdKey);
-
+			psStream.setInt(6, scoreStats);		
+			psStream.setInt(7, userIdKey);
+			
 			psStream.executeUpdate();
 		} catch (SQLException e) {
-			System.out.println("-ERROR: preparedStatmentsForUpdate");
+			System.out.println("-ERROR: preparedStatmentsForUpdate" + e.getMessage());
 		}
 	}
 
 
 	//NOT FULLY WORKING YET
-	public void preparedStatementMethod(String psString, String statementString){
+	public void preparedStatementSaveForScore(int userIdKey, String tamaName, int theScore, String deathBy){
 		try {
-			psStream = con.prepareStatement(psString);
-			psStream.setString(1, statementString);
+			psStream = con.prepareStatement("INSERT INTO `dbprojecttama`.`scores` (`userid`, `tamaname`, `totalpoints`, `deathby`) VALUES (?, ?, ?, ?);");
+			psStream.setInt(1, userIdKey);
+			psStream.setString(2, tamaName);
+			psStream.setInt(3, theScore);
+			psStream.setString(4, deathBy);
 
 			psStream.executeQuery();
 		} catch (SQLException e) {
-			System.out.println("-ERROR: preparedStatementMethod");
+			System.out.println("-ERROR: preparedStatementSaveForScore");
 		}
 	}
 
@@ -304,15 +330,17 @@ public class DBMySQLEngine {
 			long tmpHungerStats = result.getLong(4);	
 			long tmpDepressionStats = result.getLong(5);	
 			long tmpMoneyStats = result.getLong(6);	
+			long tmpscoreStats = result.getLong(7);	
 
 			int userIdKey = (int)tmpUserId;
 			int gameLevel = (int)tmpGameLevel;
 			int hungerStats = (int)tmpHungerStats;
 			int depressionStats = (int)tmpDepressionStats;
 			int moneyStats = (int)tmpMoneyStats;
+			int scoreStats = (int)tmpscoreStats;
 
 			tdbe.tamaStats(userIdKey, tamaName, gameLevel,
-					hungerStats, depressionStats, moneyStats);
+					hungerStats, depressionStats, moneyStats, scoreStats);
 
 		} catch (SQLException e) {
 			System.out.println("-ERROR: queryCaller" + e.getMessage());

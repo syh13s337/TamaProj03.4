@@ -75,25 +75,28 @@ public class WinAndEndEngine implements Runnable {
 	}
 
 
-	public void deathByHunger(String tamaName){
+	private void deathByHunger(String tamaName){
 		tge.setTextEndInfo("YOUR TAMA DIED OF HUNGER \n");
 		tge.setTextEndInfo("RIP " + tamaName + "\n\n");
 		ge.setALL_TREADS_RUNNING(false);
 		tge.tamaEndGUIStarter();
+		ge.tamaDied("Hunger");
 	}
 
-	public void deathByDepression(String tamaName){
+	private void deathByDepression(String tamaName){
 		tge.setTextEndInfo("YOUR TAMA DIED OF DEPRESSION \n");
 		tge.setTextEndInfo("RIP " + tamaName +"\n\n");
 		ge.setALL_TREADS_RUNNING(false);
 		tge.tamaEndGUIStarter();
+		ge.tamaDied("Depression");
 	}
 
-	public void winning(String tamaName){
+	private void winning(String tamaName){
 		tge.setTextEndInfo("YOU WIN \n");
 		tge.setTextEndInfo(tamaName + " is all grown up now!\n\n");
 		ge.setALL_TREADS_RUNNING(false);
 		tge.tamaEndGUIStarter();
+		ge.tamaDied("WIN");
 	}
 
 	public boolean isWin() {

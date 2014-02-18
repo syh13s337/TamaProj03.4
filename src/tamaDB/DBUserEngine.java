@@ -1,6 +1,5 @@
 package tamaDB;
 
-import java.sql.SQLException;
 
 /*USER CLASS
  * THIS CLASS WORKS WITH USER/PASSWORD
@@ -28,6 +27,11 @@ public class DBUserEngine {
 	private DBTamaGUILogIn dbtgli;
 	private DBMySQLEngine dbmysqls;
 	private TamaDBEngine tdbe;
+	private DBTamaGUICreateUser dbtgcu;
+	public void setDbtgcu(DBTamaGUICreateUser dbtgcu) {
+		this.dbtgcu = dbtgcu;
+	}
+
 	private int userIdKey;
 
 	public DBUserEngine(DBMySQLEngine dbmysqls, DBTamaGUILogIn dbtgli, TamaDBEngine tdbe){
@@ -40,16 +44,19 @@ public class DBUserEngine {
 	public void showScore(){
 		dbtgli.setTextLogInInformation(dbmysqls.getScores());
 	}
-
+	
 	//CREAT A USER
 	//WITH BOOLEAN CHECKER ON USERNAME, PASSWORD AND EMAIL.
-	public void createUsers(String userName, String userPassword,
+	//SENDS INFORMATION TO DBMySQLEngine,
+	public void createUsers(String userName, String userPassword, String userEmail,
 			boolean tmpBooleanPass, boolean tmpBooleanMail){
 		this.userName=userName;
 		dbmysqls.connectionMethod(dbmysqls.getGUI_USERNAME(), dbmysqls.getGUI_PASSWORD());
 		if(userChecker(userName) == false && tmpBooleanPass == true
 				&& tmpBooleanMail == true){
 			System.out.println("YOU CAN CREATE A USER!");
+			dbmysqls.createUser(userName, userPassword,
+					userPassword);
 		}
 		else if (userChecker(userName) == true){
 			dbtgli.popUpMessage("This user name is in use!"
@@ -80,24 +87,23 @@ public class DBUserEngine {
 			//IF THERE IS A TAMA, selectMethodTamaStats. AND SEND TAMA INT STATS TO GameEngine.
 			//USE UPDATE SQL TO UPDATE TAMA STATS
 			if(tamaDbChecker(userIdKey) == false){
-				System.out.println("There is a Tama here");
+				System.out.println("There is Tama in DB!");
 				dbmysqls.selectMethodTamaStats(userIdKey);
 			}
 			//else if there is no Tama, Insert name and new stats.
 			//Maybe pop up game luncher.
 			else if(tamaDbChecker(userIdKey) == true){
+				System.out.println("No Tama in DB! ");
 				tdbe.sendInfo(userIdKey);				
-				System.out.println("No tama! ");
+
 			}
-
 			booleantmp = true;
-
 		}
 		else{
 			dbtgli.popUpMessage("Problem with loggin!"
 					+ "\nCheck user name and password!");
 		}
-		
+
 		//STARTS GAME GUI WITH BOOLEAN CHECKER.
 		if (booleantmp == true){
 			tdbe.startGameGUI();
@@ -119,10 +125,6 @@ public class DBUserEngine {
 			userChecker = false;
 		}
 		return userChecker;
-	}
-
-	private void creatTama(){
-
 	}
 
 	//CHECKS IF THE KEY IS IN USE IN TAMA SAVE, 

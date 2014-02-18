@@ -36,17 +36,18 @@ public class TamaDBEngine {
 		dbtgli.loginStarter(dbue, dbtgli);
 	}
 
+	//SAVES STATS BY UPDATE, SENDS IT TO DBMySQLEngine.
 	public void updateStats(int userIdKey, String tamaName, int gameLevel, int hungerStats,
-			int depressionStats, int moneyStats){
+			int depressionStats, int moneyStats, int scoreStats){
 		dbmysql.saveStats(userIdKey, tamaName, gameLevel,
-				hungerStats, depressionStats, moneyStats, 2);
+				hungerStats, depressionStats, moneyStats, scoreStats,  2);
 	}
 
 	//SAVES STATS, SENDS IT TO DBMySQLEngine.
 	public void saveStats (int userIdKey, String tamaName, int gameLevel, int hungerStats,
-			int depressionStats, int moneyStats){
+			int depressionStats, int moneyStats, int scoreStats){
 		dbmysql.saveStats(userIdKey, tamaName, gameLevel,
-				hungerStats, depressionStats, moneyStats, 1);	
+				hungerStats, depressionStats, moneyStats, scoreStats, 1);	
 	}
 
 	public void sendInfo(int userIdKey){
@@ -88,18 +89,24 @@ public class TamaDBEngine {
 				+ "\nDv1-3 " + dv1 + " " + dv2 + " " + dv3
 				+ "\nEv1-3 " + ev1 + " " + ev2 + " " + ev3 
 				+ "\nFv1-3 " + fv1 + " " + fv2 + " " + fv3
-				+ "\nHv1-3 " + hv1 + " " + hv2 + " " + hv3);
+				+ "\nHv1-3 " + hv1 + " " + hv2 + " " + hv3 + "\n");
 	}
 
 	//JUST SENDS INFORMATION TO GameEngine.
 	//SELF NOTE: Change the system!
 	public void tamaStats(int userIdKey, String tamaName, int gameLevel, int hungerStats,
-			int depressionStats, int moneyStats){
+			int depressionStats, int moneyStats, int scoreStats){
 		boolean tamaInDataBase = true;
 
 		ge.tamaStatsSetter(userIdKey, tamaName, gameLevel,
-				hungerStats, depressionStats, moneyStats, tamaInDataBase);
+				hungerStats, depressionStats, moneyStats, scoreStats, tamaInDataBase);
 	}
+
+	public void saveScoreToDB(int userIdKey, String tamaName, int theScore, String deathBy){
+		dbmysql.saveScoreToDB(userIdKey, tamaName, theScore, deathBy);
+
+	}
+
 
 	//REDERECTS TO GameEngine THAT STARTS THE GAME GUI
 	public void startGameGUI(){

@@ -458,7 +458,7 @@ public class TamaGUI extends JFrame implements MouseListener {
 	public void labelUpdater(ImageIcon tmp){
 		label.setIcon(tmp);
 	}
-	
+
 	//LOG OUT BUTTON 
 	private void buttonLogOut(){
 		ge.saveTama();
@@ -473,6 +473,7 @@ public class TamaGUI extends JFrame implements MouseListener {
 
 		}
 		else if (gameLevel >= 2){
+			mo.moneyItem1();
 			he.foodDecreases1();
 			de.happinessGainedLv2();
 			textArea.setText(infoText.get(0));
@@ -611,17 +612,16 @@ public class TamaGUI extends JFrame implements MouseListener {
 	public void popUpMessage(String inStr){
 		JOptionPane.showMessageDialog(null, inStr, GameEngine.TAMA_VERSION + "Messages! ", JOptionPane.ERROR_MESSAGE); 		
 	}
-	
+
 	private void popUpMessageLogOut(){
-		int message = JOptionPane.showConfirmDialog(null, "Your Tama is saved! \nWana exit? ", GameEngine.TAMA_VERSION + "Messages! "
+		int message = JOptionPane.showConfirmDialog(null, "Your Tama is saved! \nWant to exit? ", GameEngine.TAMA_VERSION + "Messages! "
 				, JOptionPane.ERROR_MESSAGE, JOptionPane.OK_OPTION); 		
-		
 		if (message == JOptionPane.OK_OPTION){
 			System.exit(0);
 		}
-	
-		
-		
+
+
+
 	}
-		
+
 }

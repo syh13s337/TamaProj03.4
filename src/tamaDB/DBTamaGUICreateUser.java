@@ -4,16 +4,12 @@ package tamaDB;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 import javax.swing.JButton;
-
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-
 import javax.swing.JTextArea;
-
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.Color;
-
 import javax.swing.JLabel;
 
 import tamaSystem.GameEngine;
@@ -22,11 +18,32 @@ public class DBTamaGUICreateUser {
 
 	public JFrame frame;
 	private JTextField textFieldUserName;
+	public JTextField getTextFieldUserName() {
+		return textFieldUserName;
+	}
+	public void setTextFieldUserName(JTextField textFieldUserName) {
+		this.textFieldUserName = textFieldUserName;
+	}
+
 	private JTextField txtEnterPassword;
+	public JTextField getTxtEnterPassword() {
+		return txtEnterPassword;
+	}
+	public void setTxtEnterPassword(JTextField txtEnterPassword) {
+		this.txtEnterPassword = txtEnterPassword;
+	}
+
 	private JTextField txtReenterPassword;
+	private JTextField txtEnterEmail;
+	public JTextField getTxtEnterEmail() {
+		return txtEnterEmail;
+	}
+	public void setTxtEnterEmail(JTextField txtEnterEmail) {
+		this.txtEnterEmail = txtEnterEmail;
+	}
+
 	private JTextField txtTypeInCatcha;
 	private JTextArea textTerms;
-	private JTextField txtEnterEmail;
 
 	private DBTamaGUILogIn dbtgli;
 	private DBUserEngine dbue;
@@ -45,6 +62,7 @@ public class DBTamaGUICreateUser {
 		this.dbtgli = dbtgli;
 		this.dbue = dbue;
 		this.dbtgcu = dbtgcu;
+		dbue.setDbtgcu(dbtgcu);
 		initialize();
 	}
 
@@ -154,7 +172,14 @@ public class DBTamaGUICreateUser {
 			if (txtEnterPassword.getText().equals(txtReenterPassword.getText()) && !tmpStr.equals(txtEnterEmail.getText())){
 				boolean tmpBooleanPass = true;
 				boolean tmpBooleanMail = true;
-				dbue.createUsers(textFieldUserName.getText(), txtEnterPassword.getText(), tmpBooleanPass, tmpBooleanMail);			
+				dbue.createUsers(textFieldUserName.getText(), txtEnterPassword.getText(), txtEnterEmail.getText(),
+						tmpBooleanPass, tmpBooleanMail);	
+				
+				
+				dbtgli.showFrame();
+				dbtgli.popUpMessage("Account now created! \nLog in and create a Tama");
+				frame.setVisible(false);		
+				
 			}
 			else{
 				dbtgli.popUpMessage("Passwords or Email don't match!");
